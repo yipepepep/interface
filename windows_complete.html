@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Proxy Configuration Guide</title>
+    <!-- Bootstrap Dark Theme -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Windows PC Global Styles */
+        body {
+            background-color: var(--bs-dark);
+            color: var(--bs-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .desktop {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1493589976221-c2357c31ad77?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+        
+        .start-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .start-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .start-button i {
+            font-size: 22px;
+            color: #fff;
+        }
+        
+        .taskbar-app {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        
+        .taskbar-app:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .taskbar-app i {
+            font-size: 20px;
+            color: #fff;
+        }
+        
+        .taskbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+        
+        .time-display {
+            font-size: 12px;
+            color: #fff;
+            margin-left: 15px;
+        }
+        
+        .desktop-icon {
+            position: absolute;
+            width: 80px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .desktop-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .desktop-icon i {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        
+        .desktop-icon-text {
+            font-size: 12px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+        
+        .start-menu {
+            position: fixed;
+            bottom: 50px;
+            left: 0;
+            width: 350px;
+            height: 600px;
+            background-color: rgba(32, 32, 32, 0.95);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            display: none;
+            overflow: hidden;
+            z-index: 1001;
+        }
+        
+        .start-menu.active {
+            display: block;
+        }
+        
+        .start-menu-search {
+            padding: 15px;
+            background-color: rgba(40, 40, 40, 0.95);
+        }
+        
+        .start-menu-search input {
+            width: 100%;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: rgba(60, 60, 60, 0.8);
+            color: white;
+        }
+        
+        .start-menu-search input:focus {
+            outline: none;
+            background-color: rgba(70, 70, 70, 0.8);
+        }
+        
+        .start-menu-apps {
+            padding: 10px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+        
+        .menu-app {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        
+        .menu-app:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-app i {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        
+        .window {
+            position: absolute;
+            background-color: rgba(40, 40, 40, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+        }
+        
+        .window.active {
+            display: block;
+        }
+        
+        .window-header {
+            padding: 10px 15px;
+            background-color: rgba(50, 50, 50, 0.95);
+            display: flex;
+            align-items: center;
+            cursor: move;
+        }
+        
+        .window-title {
+            flex-grow: 1;
+            font-size: 14px;
+        }
+        
+        .window-controls {
+            display: flex;
+        }
+        
+        .window-control {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .window-control.minimize {
+            background-color: #f1c40f;
+        }
+        
+        .window-control.maximize {
+            background-color: #2ecc71;
+        }
+        
+        .window-control.close {
+            background-color: #e74c3c;
+        }
+        
+        .window-content {
+            padding: 0;
+            height: calc(100% - 35px);
+            overflow: auto;
+        }
+        
+        .settings-app {
+            width: 800px;
+            height: 600px;
+        }
+        
+        .file-explorer {
+            width: 750px;
+            height: 500px;
+        }
+        
+        .control-panel {
+            width: 700px;
+            height: 550px;
+            display: flex;
+        }
+        
+        .control-panel-sidebar {
+            width: 220px;
+            height: 100%;
+            padding: 15px;
+            background-color: rgba(45, 45, 45, 0.95);
+        }
+        
+        .control-panel-content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .control-panel-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .control-panel-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-panel-item i {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        
+        .control-panel-category {
+            font-weight: bold;
+            margin: 15px 0 8px 0;
+            color: #bbb;
+        }
+        
+        .control-panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        
+        .control-panel-grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 15px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: rgba(60, 60, 60, 0.5);
+        }
+        
+        .control-panel-grid-item:hover {
+            background-color: rgba(80, 80, 80, 0.5);
+        }
+        
+        .control-panel-grid-item i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #4da6ff;
+        }
+        
+        .context-menu {
+            position: absolute;
+            width: 200px;
+            background-color: rgba(40, 40, 40, 0.95);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 2000;
+        }
+        
+        .context-menu.active {
+            display: block;
+        }
+        
+        .context-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .context-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .context-menu-separator {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 5px 0;
+        }
+        
+        /* Windows Proxy Settings Styles */
+        .windows-sidebar {
+            background-color: var(--bs-dark);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .sidebar-header {
+            border-bottom: 1px solid var(--bs-gray-700);
+        }
+
+        .category-item {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .category-item:hover {
+            background-color: var(--bs-gray-800);
+        }
+
+        .category-item.active {
+            background-color: var(--bs-primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .windows-content {
+            background-color: var(--bs-gray-900);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .content-title {
+            font-weight: 500;
+            font-size: 1.8rem;
+        }
+
+        .content-tabs .nav-link {
+            color: var(--bs-light);
+            border-radius: 0;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .content-tabs .nav-link:hover {
+            color: var(--bs-primary);
+            background-color: transparent;
+            border-bottom: 2px solid var(--bs-primary);
+        }
+
+        .content-tabs .nav-link.active {
+            color: var(--bs-primary);
+            background-color: transparent;
+            border-bottom: 2px solid var(--bs-primary);
+            font-weight: 500;
+        }
+
+        .settings-card {
+            background-color: var(--bs-gray-800);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .form-element {
+            background-color: var(--bs-gray-800);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .windows-note {
+            background-color: var(--bs-gray-700);
+            border-radius: 4px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .windows-note i {
+            color: var(--bs-primary);
+            margin-top: 3px;
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .btn-secondary {
+            background-color: var(--bs-gray-700);
+            border-color: var(--bs-gray-700);
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb a {
+            color: var(--bs-primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Notepad Styles */
+        .notepad-content {
+            font-family: 'Consolas', monospace;
+            background-color: #252525;
+            color: #f0f0f0;
+            padding: 12px;
+            overflow: auto;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            font-size: 14px;
+            height: 100%;
+        }
+        
+        .notepad-content h1, 
+        .notepad-content h2, 
+        .notepad-content h3 {
+            color: #1e90ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .notepad-content .command {
+            background-color: #3c3c3c;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+        
+        .notepad-content ul {
+            padding-left: 20px;
+        }
+        
+        .notepad-content li {
+            margin-bottom: 8px;
+        }
+        
+        .notepad-content .important {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .notepad-content .tip {
+            color: #2ecc71;
+            font-style: italic;
+        }
+        
+        .notepad-header {
+            background-color: #333333;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .menu-bar {
+            background-color: #333333;
+            padding: 4px 8px;
+            font-size: 13px;
+            display: flex;
+            border-bottom: 1px solid #444;
+        }
+        
+        .menu-item {
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop" id="desktop">
+        <!-- Desktop Icons -->
+        <div class="desktop-icon" style="top: 20px; left: 20px;" id="thisPC">
+            <i class="fa-solid fa-computer"></i>
+            <div class="desktop-icon-text">This PC</div>
+        </div>
+        
+        <div class="desktop-icon" style="top: 20px; left: 120px;" id="recycleBin">
+            <i class="fa-solid fa-trash-can"></i>
+            <div class="desktop-icon-text">Recycle Bin</div>
+        </div>
+        
+        <div class="desktop-icon" style="top: 20px; left: 220px;" id="edge">
+            <i class="fa-brands fa-edge"></i>
+            <div class="desktop-icon-text">Microsoft Edge</div>
+        </div>
+        
+        <div class="desktop-icon" style="top: 20px; left: 320px;" id="controlPanel">
+            <i class="fa-solid fa-sliders"></i>
+            <div class="desktop-icon-text">Control Panel</div>
+        </div>
+        
+        <div class="desktop-icon" style="top: 20px; left: 420px;" id="settings">
+            <i class="fa-solid fa-gear"></i>
+            <div class="desktop-icon-text">Settings</div>
+        </div>
+        
+        <div class="desktop-icon" style="top: 120px; left: 20px;" id="notepad">
+            <i class="fa-regular fa-file-lines"></i>
+            <div class="desktop-icon-text">Proxy Setup Guide</div>
+        </div>
+        
+        <!-- Windows -->
+        <div class="window settings-app" id="settingsWindow">
+            <div class="window-header">
+                <div class="window-title">Settings</div>
+                <div class="window-controls">
+                    <div class="window-control minimize"></div>
+                    <div class="window-control maximize"></div>
+                    <div class="window-control close" data-window="settingsWindow"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <!-- Windows Proxy Settings Content -->
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <!-- Windows Settings Sidebar -->
+                            <div class="windows-sidebar mb-4">
+                                <div class="sidebar-header pb-2 mb-3">
+                                    <h4><i class="fa-solid fa-gear me-2"></i> Settings</h4>
+                                </div>
+                                <div class="sidebar-search mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
+                                        <input type="text" class="form-control" placeholder="Find a setting">
+                                    </div>
+                                </div>
+                                <div class="sidebar-categories">
+                                    <div class="category-item active">
+                                        <i class="fa-solid fa-wifi me-2"></i> Network & Internet
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-display me-2"></i> System
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-palette me-2"></i> Personalization
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-mobile-screen me-2"></i> Apps
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-user me-2"></i> Accounts
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-clock me-2"></i> Time & Language
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-gamepad me-2"></i> Gaming
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-universal-access me-2"></i> Accessibility
+                                    </div>
+                                    <div class="category-item">
+                                        <i class="fa-solid fa-shield-halved me-2"></i> Privacy & Security
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <!-- Windows Settings Content Area -->
+                            <div class="windows-content">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="#">Settings</a></li>
+                                        <li class="breadcrumb-item"><a href="#">Network & Internet</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Proxy</li>
+                                    </ol>
+                                </nav>
+                                
+                                <h2 class="content-title mb-4">
+                                    <i class="fa-solid fa-wifi me-2"></i> Network & Internet
+                                </h2>
+                                
+                                <!-- Sub-navigation Tabs -->
+                                <div class="content-tabs mb-4">
+                                    <div class="nav nav-pills">
+                                        <a class="nav-link">Status</a>
+                                        <a class="nav-link">Wi-Fi</a>
+                                        <a class="nav-link">Ethernet</a>
+                                        <a class="nav-link">VPN</a>
+                                        <a class="nav-link">Mobile hotspot</a>
+                                        <a class="nav-link">Airplane mode</a>
+                                        <a class="nav-link active">Proxy</a>
+                                        <a class="nav-link">Dial-up</a>
+                                        <a class="nav-link">Advanced</a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Main Content Area -->
+                                <div class="settings-content">
+                                    <div class="section-header">
+                                        <h3>Proxy</h3>
+                                        <p class="text-muted">Configure how Windows connects to the internet using a proxy server.</p>
+                                    </div>
+                                    
+                                    <!-- Step 1 -->
+                                    <div class="settings-card mb-4">
+                                        <h4 class="card-title">Step 1: Access Proxy Settings</h4>
+                                        <p>To access proxy settings, navigate to Settings > Network & Internet > Proxy from the Windows Start menu.</p>
+                                        <div class="windows-note">
+                                            <i class="fa-solid fa-lightbulb me-2"></i>
+                                            <span>You can also access these settings by typing "proxy" in the Windows search box.</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Step 2 -->
+                                    <div class="settings-card mb-4">
+                                        <h4 class="card-title">Step 2: Configure Automatic Proxy Detection</h4>
+                                        <div class="form-element mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <h5 class="mb-0">Automatically detect settings</h5>
+                                                    <p class="text-muted mb-0">Windows will try to detect proxy settings automatically.</p>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="autoDetectSwitch" checked>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Step 3 -->
+                                    <div class="settings-card mb-4">
+                                        <h4 class="card-title">Step 3: Configure Automatic Proxy Script</h4>
+                                        <div class="form-element mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <h5 class="mb-0">Use setup script</h5>
+                                                    <p class="text-muted mb-0">Use an automatic configuration script to configure proxy settings.</p>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="scriptSwitch">
+                                                </div>
+                                            </div>
+                                            <div id="scriptSettings" class="mt-3 d-none">
+                                                <div class="mb-3">
+                                                    <label for="scriptAddress" class="form-label">Script address</label>
+                                                    <input type="text" class="form-control" id="scriptAddress" placeholder="Enter the address of the setup script">
+                                                </div>
+                                                <button class="btn btn-secondary">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Step 4 -->
+                                    <div class="settings-card mb-4">
+                                        <h4 class="card-title">Step 4: Configure Manual Proxy Setup</h4>
+                                        <div class="form-element mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <h5 class="mb-0">Use a proxy server</h5>
+                                                    <p class="text-muted mb-0">Manually set up proxy settings.</p>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="manualProxySwitch">
+                                                </div>
+                                            </div>
+                                            <div id="manualProxySettings" class="mt-3 d-none">
+                                                <div class="mb-3">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <label for="proxyAddress" class="form-label">Address</label>
+                                                            <input type="text" class="form-control" id="proxyAddress" placeholder="Enter proxy server address">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="proxyPort" class="form-label">Port</label>
+                                                            <input type="number" class="form-control" id="proxyPort" placeholder="Enter port number">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-3 form-check">
+                                                    <input type="checkbox" class="form-check-input" id="dontUseForLocalCheck">
+                                                    <label class="form-check-label" for="dontUseForLocalCheck">Don't use the proxy server for local (intranet) addresses</label>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <button class="btn btn-primary" id="saveProxyBtn">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Step 5 -->
+                                    <div class="settings-card mb-4">
+                                        <h4 class="card-title">Step 5: Configure Proxy Exceptions</h4>
+                                        <div class="form-element mb-3" id="exceptionsSection">
+                                            <div class="mb-3">
+                                                <label for="exceptionsList" class="form-label">Exceptions</label>
+                                                <p class="text-muted">Don't use proxy for addresses beginning with:</p>
+                                                <textarea class="form-control" id="exceptionsList" rows="3" placeholder="Enter semicolon-separated values (e.g., *.local;*.intranet;192.168.*)" disabled></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Additional Information -->
+                                    <div class="settings-card">
+                                        <h4 class="card-title">Additional Information</h4>
+                                        <div class="windows-note">
+                                            <i class="fa-solid fa-info-circle me-2"></i>
+                                            <span>When you configure a proxy server, Windows uses it for all network connections, including Microsoft Edge and other Windows apps.</span>
+                                        </div>
+                                        <div class="windows-note mt-3">
+                                            <i class="fa-solid fa-warning me-2"></i>
+                                            <span>Some applications may not use the Windows proxy settings. You might need to configure proxy settings separately for those applications.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="window" id="notepadWindow" style="width: 650px; height: 600px;">
+            <div class="window-header">
+                <div class="window-title">Proxy Setup Guide - Notepad</div>
+                <div class="window-controls">
+                    <div class="window-control minimize"></div>
+                    <div class="window-control maximize"></div>
+                    <div class="window-control close" data-window="notepadWindow"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="notepad-header">
+                    <div class="notepad-title">Proxy Configuration Instructions - Notepad</div>
+                </div>
+                
+                <div class="menu-bar">
+                    <div class="menu-item">File</div>
+                    <div class="menu-item">Edit</div>
+                    <div class="menu-item">Format</div>
+                    <div class="menu-item">View</div>
+                    <div class="menu-item">Help</div>
+                </div>
+                
+                <div class="notepad-content">
+# WINDOWS PROXY CONFIGURATION GUIDE
+
+This guide will help you set up proxy settings in Windows.
+
+## METHOD 1: WINDOWS SETTINGS (RECOMMENDED)
+
+1. Open Windows Settings:
+   - Click on Start Menu
+   - Click on the gear icon (Settings)
+   - Or press Win+I on your keyboard
+
+2. Navigate to Network & Internet section:
+   - Click on "Network & Internet"
+   - Select "Proxy" from the left sidebar
+
+3. Configure your proxy:
+
+   A) For Automatic Proxy Detection:
+      - Toggle ON "Automatically detect settings"
+      - Windows will try to detect network proxy settings automatically
+
+   B) For Proxy Auto-Configuration Script:
+      - Toggle ON "Use setup script"
+      - Enter the address provided by your network administrator
+        Example: http://proxy.example.com/proxy.pac
+      - Click Save
+
+   C) For Manual Proxy Setup:
+      - Toggle ON "Use a proxy server"
+      - Enter the proxy server address (e.g., proxy.example.com)
+      - Enter the port number (e.g., 8080)
+      - Check "Don't use proxy server for local addresses" if needed
+      - Click Save
+
+4. For Exceptions:
+   - Under the Manual Proxy section, you can add addresses that should bypass the proxy
+   - Use semicolons to separate multiple entries
+   - Example: *.local;*.intranet;192.168.*
+
+## METHOD 2: CONTROL PANEL
+
+1. Open Control Panel:
+   - Right-click Start Menu
+   - Select "Control Panel"
+   - Or type "Control Panel" in search
+
+2. Navigate to Internet Properties:
+   - Click "Network and Internet"
+   - Click "Internet Options"
+
+3. Access Proxy Settings:
+   - Go to "Connections" tab
+   - Click "LAN settings" button at the bottom
+
+4. Configure proxy in the dialog box:
+   - Similar options as in Windows Settings
+   - Check "Use a proxy server for your LAN"
+   - Enter Address and Port
+   - Click OK when done
+
+## IMPORTANT NOTES
+
+- Proxy settings apply system-wide to Windows and most applications
+- Some applications may ignore Windows proxy settings and require separate configuration
+- You may need to restart applications for proxy changes to take effect
+- Contact your network administrator if you don't know your proxy settings
+
+## TESTING YOUR PROXY
+
+To test if your proxy is working:
+1. Open a web browser
+2. Try to access a website (e.g., www.google.com)
+3. If it works, your proxy is configured correctly
+
+If you cannot connect to the internet:
+- Double-check your proxy address and port
+- Verify your proxy credentials if authentication is required
+- Check if your proxy server is accessible
+- Try temporarily disabling the proxy to see if that's the issue
+
+## TROUBLESHOOTING
+
+If you experience issues:
+- Restart your computer after changing proxy settings
+- Check if your proxy server requires authentication
+- Try using automatic detection first
+- Consult your IT department or network administrator
+                </div>
+            </div>
+        </div>
+        
+        <div class="window file-explorer" id="fileExplorerWindow">
+            <div class="window-header">
+                <div class="window-title">File Explorer</div>
+                <div class="window-controls">
+                    <div class="window-control minimize"></div>
+                    <div class="window-control maximize"></div>
+                    <div class="window-control close" data-window="fileExplorerWindow"></div>
+                </div>
+            </div>
+            <div class="window-content" style="padding: 15px;">
+                <h4>This PC</h4>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-hard-drive me-2"></i> Local Disk (C:)
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-hard-drive me-2"></i> Local Disk (D:)
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-folder me-2"></i> Documents
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-folder me-2"></i> Downloads
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-folder me-2"></i> Pictures
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-folder me-2"></i> Music
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fa-solid fa-folder me-2"></i> Videos
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="window control-panel" id="controlPanelWindow">
+            <div class="window-header">
+                <div class="window-title">Control Panel</div>
+                <div class="window-controls">
+                    <div class="window-control minimize"></div>
+                    <div class="window-control maximize"></div>
+                    <div class="window-control close" data-window="controlPanelWindow"></div>
+                </div>
+            </div>
+            <div class="window-content" style="display: flex;">
+                <div class="control-panel-sidebar">
+                    <h5>Control Panel</h5>
+                    <div class="control-panel-category">System and Security</div>
+                    <div class="control-panel-item" id="networkSettings">
+                        <i class="fa-solid fa-wifi"></i>
+                        <span>Network and Internet</span>
+                    </div>
+                    <div class="control-panel-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Security</span>
+                    </div>
+                    <div class="control-panel-item">
+                        <i class="fa-solid fa-computer"></i>
+                        <span>System</span>
+                    </div>
+                    
+                    <div class="control-panel-category">Personal</div>
+                    <div class="control-panel-item">
+                        <i class="fa-solid fa-display"></i>
+                        <span>Appearance</span>
+                    </div>
+                    <div class="control-panel-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Clock and Region</span>
+                    </div>
+                    <div class="control-panel-item">
+                        <i class="fa-solid fa-wheelchair"></i>
+                        <span>Accessibility</span>
+                    </div>
+                </div>
+                <div class="control-panel-content">
+                    <h4>Control Panel</h4>
+                    <p>Adjust your computer's settings.</p>
+                    
+                    <div class="control-panel-grid">
+                        <div class="control-panel-grid-item" id="networkSettingsIcon">
+                            <i class="fa-solid fa-wifi"></i>
+                            <span>Network and Internet</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Security</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-computer"></i>
+                            <span>System</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-display"></i>
+                            <span>Display</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-keyboard"></i>
+                            <span>Devices</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-users"></i>
+                            <span>User Accounts</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Time & Language</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-wheelchair"></i>
+                            <span>Accessibility</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-palette"></i>
+                            <span>Personalization</span>
+                        </div>
+                        <div class="control-panel-grid-item">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Programs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Taskbar -->
+        <div class="taskbar">
+            <div class="start-button" id="startButton">
+                <i class="fa-brands fa-windows"></i>
+            </div>
+            <div class="taskbar-app" id="taskbarFileExplorer">
+                <i class="fa-solid fa-folder"></i>
+            </div>
+            <div class="taskbar-app" id="taskbarEdge">
+                <i class="fa-brands fa-edge"></i>
+            </div>
+            <div class="taskbar-app" id="taskbarSettings">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <div class="taskbar-app" id="taskbarNotepad">
+                <i class="fa-regular fa-file-lines"></i>
+            </div>
+            <div class="taskbar-right">
+                <i class="fa-solid fa-wifi me-3"></i>
+                <i class="fa-solid fa-volume-high me-3"></i>
+                <div class="time-display" id="timeDisplay">3:45 PM</div>
+            </div>
+        </div>
+        
+        <!-- Start Menu -->
+        <div class="start-menu" id="startMenu">
+            <div class="start-menu-search">
+                <input type="text" placeholder="Type here to search">
+            </div>
+            <div class="start-menu-apps">
+                <div class="menu-app" id="menuSettings">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="menu-app" id="menuControlPanel">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Control Panel</span>
+                </div>
+                <div class="menu-app" id="menuFileExplorer">
+                    <i class="fa-solid fa-folder"></i>
+                    <span>File Explorer</span>
+                </div>
+                <div class="menu-app" id="menuNotepad">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <span>Proxy Setup Guide</span>
+                </div>
+                <div class="menu-app">
+                    <i class="fa-solid fa-terminal"></i>
+                    <span>Command Prompt</span>
+                </div>
+                <div class="menu-app">
+                    <i class="fa-solid fa-paint-roller"></i>
+                    <span>Paint</span>
+                </div>
+                <div class="menu-app">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>Calculator</span>
+                </div>
+                <div class="menu-app">
+                    <i class="fa-solid fa-power-off text-danger"></i>
+                    <span>Power</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Context Menu -->
+        <div class="context-menu" id="contextMenu">
+            <div class="context-menu-item">View</div>
+            <div class="context-menu-item">Sort by</div>
+            <div class="context-menu-item">Refresh</div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">New</div>
+            <div class="context-menu-item">Personalize</div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">Display settings</div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Embedded JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('startButton');
+            const startMenu = document.getElementById('startMenu');
+            const desktop = document.getElementById('desktop');
+            const contextMenu = document.getElementById('contextMenu');
+            
+            // Update time
+            function updateTime() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                
+                const timeString = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
+                document.getElementById('timeDisplay').textContent = timeString;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // Toggle start menu
+            startButton.addEventListener('click', function() {
+                startMenu.classList.toggle('active');
+                
+                // Close context menu if open
+                contextMenu.classList.remove('active');
+            });
+            
+            // Close start menu when clicking elsewhere
+            desktop.addEventListener('click', function(e) {
+                if (!startMenu.contains(e.target) && e.target !== startButton) {
+                    startMenu.classList.remove('active');
+                }
+            });
+            
+            // Context menu
+            desktop.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                
+                // Close start menu
+                startMenu.classList.remove('active');
+                
+                // Position and show context menu
+                contextMenu.style.left = e.pageX + 'px';
+                contextMenu.style.top = e.pageY + 'px';
+                contextMenu.classList.add('active');
+            });
+            
+            // Close context menu when clicking elsewhere
+            desktop.addEventListener('click', function() {
+                contextMenu.classList.remove('active');
+            });
+            
+            // Window controls
+            const closeButtons = document.querySelectorAll('.window-control.close');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const windowId = this.getAttribute('data-window');
+                    document.getElementById(windowId).classList.remove('active');
+                });
+            });
+            
+            // Make windows draggable
+            const windows = document.querySelectorAll('.window');
+            windows.forEach(window => {
+                const header = window.querySelector('.window-header');
+                let isDragging = false;
+                let offsetX, offsetY;
+                
+                header.addEventListener('mousedown', function(e) {
+                    isDragging = true;
+                    offsetX = e.clientX - window.getBoundingClientRect().left;
+                    offsetY = e.clientY - window.getBoundingClientRect().top;
+                    
+                    // Bring window to front
+                    windows.forEach(w => {
+                        w.style.zIndex = 100;
+                    });
+                    window.style.zIndex = 200;
+                });
+                
+                document.addEventListener('mousemove', function(e) {
+                    if (isDragging) {
+                        window.style.left = (e.clientX - offsetX) + 'px';
+                        window.style.top = (e.clientY - offsetY) + 'px';
+                    }
+                });
+                
+                document.addEventListener('mouseup', function() {
+                    isDragging = false;
+                });
+            });
+            
+            // Open windows from desktop icons
+            document.getElementById('settings').addEventListener('dblclick', function() {
+                document.getElementById('settingsWindow').classList.add('active');
+                document.getElementById('settingsWindow').style.top = '50px';
+                document.getElementById('settingsWindow').style.left = '100px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('settingsWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('thisPC').addEventListener('dblclick', function() {
+                document.getElementById('fileExplorerWindow').classList.add('active');
+                document.getElementById('fileExplorerWindow').style.top = '80px';
+                document.getElementById('fileExplorerWindow').style.left = '150px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('fileExplorerWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('controlPanel').addEventListener('dblclick', function() {
+                document.getElementById('controlPanelWindow').classList.add('active');
+                document.getElementById('controlPanelWindow').style.top = '70px';
+                document.getElementById('controlPanelWindow').style.left = '200px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('controlPanelWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('notepad').addEventListener('dblclick', function() {
+                document.getElementById('notepadWindow').classList.add('active');
+                document.getElementById('notepadWindow').style.top = '100px';
+                document.getElementById('notepadWindow').style.left = '250px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('notepadWindow').style.zIndex = 200;
+            });
+            
+            // Open windows from taskbar
+            document.getElementById('taskbarSettings').addEventListener('click', function() {
+                document.getElementById('settingsWindow').classList.add('active');
+                document.getElementById('settingsWindow').style.top = '50px';
+                document.getElementById('settingsWindow').style.left = '100px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('settingsWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('taskbarFileExplorer').addEventListener('click', function() {
+                document.getElementById('fileExplorerWindow').classList.add('active');
+                document.getElementById('fileExplorerWindow').style.top = '80px';
+                document.getElementById('fileExplorerWindow').style.left = '150px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('fileExplorerWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('taskbarNotepad').addEventListener('click', function() {
+                document.getElementById('notepadWindow').classList.add('active');
+                document.getElementById('notepadWindow').style.top = '100px';
+                document.getElementById('notepadWindow').style.left = '250px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('notepadWindow').style.zIndex = 200;
+            });
+            
+            // Open windows from start menu
+            document.getElementById('menuSettings').addEventListener('click', function() {
+                document.getElementById('settingsWindow').classList.add('active');
+                document.getElementById('settingsWindow').style.top = '50px';
+                document.getElementById('settingsWindow').style.left = '100px';
+                startMenu.classList.remove('active');
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('settingsWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('menuControlPanel').addEventListener('click', function() {
+                document.getElementById('controlPanelWindow').classList.add('active');
+                document.getElementById('controlPanelWindow').style.top = '70px';
+                document.getElementById('controlPanelWindow').style.left = '200px';
+                startMenu.classList.remove('active');
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('controlPanelWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('menuFileExplorer').addEventListener('click', function() {
+                document.getElementById('fileExplorerWindow').classList.add('active');
+                document.getElementById('fileExplorerWindow').style.top = '80px';
+                document.getElementById('fileExplorerWindow').style.left = '150px';
+                startMenu.classList.remove('active');
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('fileExplorerWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('menuNotepad').addEventListener('click', function() {
+                document.getElementById('notepadWindow').classList.add('active');
+                document.getElementById('notepadWindow').style.top = '100px';
+                document.getElementById('notepadWindow').style.left = '250px';
+                startMenu.classList.remove('active');
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('notepadWindow').style.zIndex = 200;
+            });
+            
+            // Network Settings in Control Panel leads to Settings Proxy
+            document.getElementById('networkSettings').addEventListener('click', function() {
+                document.getElementById('controlPanelWindow').classList.remove('active');
+                document.getElementById('settingsWindow').classList.add('active');
+                document.getElementById('settingsWindow').style.top = '50px';
+                document.getElementById('settingsWindow').style.left = '100px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('settingsWindow').style.zIndex = 200;
+            });
+            
+            document.getElementById('networkSettingsIcon').addEventListener('click', function() {
+                document.getElementById('controlPanelWindow').classList.remove('active');
+                document.getElementById('settingsWindow').classList.add('active');
+                document.getElementById('settingsWindow').style.top = '50px';
+                document.getElementById('settingsWindow').style.left = '100px';
+                
+                // Bring window to front
+                windows.forEach(w => {
+                    w.style.zIndex = 100;
+                });
+                document.getElementById('settingsWindow').style.zIndex = 200;
+            });
+            
+            // Toggle for automatic setup script in proxy settings
+            const scriptSwitch = document.getElementById('scriptSwitch');
+            const scriptSettings = document.getElementById('scriptSettings');
+            const manualProxySwitch = document.getElementById('manualProxySwitch');
+            const manualProxySettings = document.getElementById('manualProxySettings');
+            const exceptionsSection = document.getElementById('exceptionsSection');
+            const exceptionsList = document.getElementById('exceptionsList');
+            
+            scriptSwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    scriptSettings.classList.remove('d-none');
+                    // If we're enabling script, disable manual proxy
+                    if (manualProxySwitch.checked) {
+                        manualProxySwitch.checked = false;
+                        manualProxySettings.classList.add('d-none');
+                        exceptionsSection.classList.add('d-none');
+                        exceptionsList.disabled = true;
+                    }
+                } else {
+                    scriptSettings.classList.add('d-none');
+                }
+            });
+            
+            // Toggle for manual proxy setup
+            manualProxySwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    manualProxySettings.classList.remove('d-none');
+                    exceptionsSection.classList.remove('d-none');
+                    exceptionsList.disabled = false;
+                    // If we're enabling manual proxy, disable script
+                    if (scriptSwitch.checked) {
+                        scriptSwitch.checked = false;
+                        scriptSettings.classList.add('d-none');
+                    }
+                } else {
+                    manualProxySettings.classList.add('d-none');
+                    exceptionsSection.classList.add('d-none');
+                    exceptionsList.disabled = true;
+                }
+            });
+            
+            // Save proxy button
+            const saveProxyBtn = document.getElementById('saveProxyBtn');
+            saveProxyBtn.addEventListener('click', function() {
+                const proxyAddress = document.getElementById('proxyAddress').value;
+                const proxyPort = document.getElementById('proxyPort').value;
+                
+                if (proxyAddress && proxyPort) {
+                    // In a real app, this would save the settings
+                    alert('Proxy settings saved: ' + proxyAddress + ':' + proxyPort);
+                } else {
+                    alert('Please enter both proxy address and port');
+                }
+            });
+            
+            // Make the sidebar items clickable for interactivity
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to the clicked item
+                    this.classList.add('active');
+                });
+            });
+            
+            // Make the content tabs clickable for interactivity
+            const contentTabs = document.querySelectorAll('.content-tabs .nav-link');
+            contentTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    contentTabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to the clicked tab
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
